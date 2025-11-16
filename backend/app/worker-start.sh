@@ -1,5 +1,5 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 set -e
 
-hatch run python /app/app/celeryworker_pre_start.py
-hatch run celery -A app.worker worker -l info -Q main-queue -c 1
+# Directly run the celery worker without the pre-start script
+celery -A app.worker worker -l info -Q main-queue -c 1

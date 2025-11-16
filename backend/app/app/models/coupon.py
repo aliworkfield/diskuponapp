@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
 
 class Coupon(Base):
+    __tablename__ = "coupons"
     
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     brand: Mapped[str] = mapped_column(String, index=True)
@@ -19,8 +20,8 @@ class Coupon(Base):
     code: Mapped[str] = mapped_column(String, unique=True, index=True)
     expiration_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     is_assigned: Mapped[bool] = mapped_column(Boolean, default=False)
-    assigned_to_user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"), nullable=True)
+    assigned_to_user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"), nullable=True)
     
     # Relationships
-    assigned_to_user: Mapped[Optional["User"]] = relationship("User", foreign_keys=[assigned_to_user_id])
+    assigned_to_user: Mapped[Optional["User"]] = relationship("User", foreign_keys=[assigned_to_user_id], back_populates="assigned_coupons")
     user_coupons: Mapped[list["UserCoupon"]] = relationship("UserCoupon", back_populates="coupon")

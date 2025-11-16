@@ -6,5 +6,5 @@ python /app/app/backend_pre_start.py
 # Run migrations
 alembic upgrade head
 
-# Create initial data in DB
-python /app/app/initial_data.py
+# Skip initial data creation for now
+# python /app/app/initial_data.py

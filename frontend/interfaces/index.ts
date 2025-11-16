@@ -15,6 +15,14 @@ import type {
   INotification
 } from "./utilities"
 
+import type {
+  ICoupon,
+  ICouponCreate,
+  ICouponUpload,
+  ICouponAssign,
+  IUserCoupon
+} from "./coupons"
+
 // https://stackoverflow.com/a/64782482/295606
 interface IKeyable {
   [key: string]: any | any[]
@@ -32,5 +40,10 @@ export type {
   IEnableTOTP,
   ISendEmail,
   IMsg,
-  INotification
+  INotification,
+  ICoupon,
+  ICouponCreate,
+  ICouponUpload,
+  ICouponAssign,
+  IUserCoupon
 }

@@ -255,19 +255,24 @@ services:
       - ./frontend/.env
     environment:
       - NUXT_HOST=0.0.0.0
-      - NUXT_PORT=80
+      - NUXT_PORT=3000
       - NITRO_HOST=0.0.0.0
-      - NITRO_PORT=80
+      - NITRO_PORT=3000
     build:
       context: ./frontend
-      args:
-        NUXT_VERSION: ${NUXT_VERSION:-^3.5}
+      dockerfile: Dockerfile
+      target: build
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/frontend
+      - /frontend/node_modules
     deploy:
       labels:
         - traefik.enable=true
         - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
         - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.rule=PathPrefix(`/`)
-        - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=80
+        - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=3000
 
 volumes:
   app-db-data:

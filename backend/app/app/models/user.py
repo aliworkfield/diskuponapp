@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import DateTime, ForeignKey
+from sqlalchemy import DateTime, ForeignKey, Integer
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
 from uuid import uuid4
@@ -16,6 +16,8 @@ if TYPE_CHECKING:
 
 
 class User(Base):
+    __tablename__ = "user"
+    
     id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid4)
     created: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     modified: Mapped[datetime] = mapped_column(
@@ -28,7 +30,7 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(index=True, nullable=True)
     email: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
     hashed_password: Mapped[Optional[str]] = mapped_column(nullable=True)
-    role_id: Mapped[Optional[int]] = mapped_column(ForeignKey("roles.id"), nullable=True)
+    role_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("roles.id"), nullable=True)
     display_name: Mapped[Optional[str]] = mapped_column(nullable=True)
     # AUTHENTICATION AND PERSISTENCE
     totp_secret: Mapped[Optional[str]] = mapped_column(nullable=True)
@@ -41,4 +43,5 @@ class User(Base):
     )
     # Relationships
     role: Mapped[Optional["Role"]] = relationship("Role", back_populates="users")
-    user_coupons: Mapped[list["UserCoupon"]] = relationship("UserCoupon", back_populates="user")
+    user_coupons: Mapped[list["UserCoupon"]] = relationship("UserCoupon", foreign_keys="UserCoupon.user_id", back_populates="user")
+    assigned_coupons: Mapped[list["Coupon"]] = relationship("Coupon", foreign_keys="Coupon.assigned_to_user_id", back_populates="assigned_to_user")

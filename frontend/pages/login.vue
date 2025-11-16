@@ -39,6 +39,17 @@
                   Submit
                 </button>
               </div>
+              
+              <!-- Windows Authentication Button -->
+              <div class="mt-4">
+                <button 
+                  type="button" 
+                  @click="windowsLogin"
+                  class="flex w-full justify-center rounded-md border border-transparent bg-blue-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+                >
+                  Login with Windows Authentication
+                </button>
+              </div>
             </Form>
           </div>
 
@@ -53,7 +64,6 @@
               <span aria-hidden="true" :class="[oauth ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-gray-200 bg-white shadow ring-0 transition-transform duration-200 ease-in-out']" />
             </Switch>
           </div>
-
         </div>
       </div>
       <div class="relative hidden w-0 flex-1 lg:block">
@@ -67,8 +77,6 @@ import { Switch } from '@headlessui/vue'
 import { useAuthStore, useTokenStore } from "@/stores"
 import { tokenParser, tokenIsTOTP } from "@/utilities"
 import { apiAuth } from "@/api"
-
-
 
 definePageMeta({
   layout: "authentication",
@@ -96,6 +104,14 @@ async function submit(values: any) {
   if (tokenStore.token && 
       tokenParser(tokenStore.token).hasOwnProperty("fingerprint"))
     return await navigateTo(redirectAfterMagic)
+}
+
+// Windows Authentication function
+async function windowsLogin() {
+  await authStore.windowsLogin()
+  if (authStore.loggedIn) return await navigateTo(redirectAfterLogin)
+  if (tokenStore.token && tokenIsTOTP(tokenStore.token)) 
+    return await navigateTo(redirectTOTP)
 }
 
 onMounted(async () => {

@@ -10,7 +10,7 @@
         <p>Loading coupons...</p>
       </div>
       
-      <div v-else-if="coupons.length === 0" class="mt-4 text-center">
+      <div v-else-if="couponStore.assignedCoupons.length === 0" class="mt-4 text-center">
         <p>You don't have any coupons assigned yet.</p>
       </div>
       
@@ -25,7 +25,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-white">
-            <tr v-for="coupon in coupons" :key="coupon.id">
+            <tr v-for="coupon in couponStore.assignedCoupons" :key="coupon.id">
               <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{ coupon.brand }}</td>
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ coupon.tag }}</td>
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ coupon.code }}</td>
@@ -40,23 +40,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useAuthStore, useTokenStore } from '@/stores'
-
-interface Coupon {
-  id: number
-  brand: string
-  tag: string
-  code: string
-  expiration_date?: string
-  is_assigned: boolean
-  assigned_to_user_id: number | null
-}
+import { useAuthStore, useTokenStore, useCouponStore } from '@/stores'
+import type { ICoupon } from '@/interfaces'
 
 const authStore = useAuthStore()
 const tokenStore = useTokenStore()
+const couponStore = useCouponStore()
 
 const loading = ref(true)
-const coupons = ref<Coupon[]>([])
 
 onMounted(async () => {
   await loadCoupons()
@@ -64,28 +55,8 @@ onMounted(async () => {
 
 const loadCoupons = async () => {
   try {
-    // Here you would make an API call to get the user's coupons
-    // For now, we'll just show sample data
-    coupons.value = [
-      {
-        id: 1,
-        brand: 'Nike',
-        tag: 'nikeOctober1',
-        code: 'nike1',
-        expiration_date: '2025-12-31',
-        is_assigned: true,
-        assigned_to_user_id: 1
-      },
-      {
-        id: 2,
-        brand: 'Adidas',
-        tag: 'adidasNovember1',
-        code: 'adidas1',
-        expiration_date: '2025-11-30',
-        is_assigned: true,
-        assigned_to_user_id: 1
-      }
-    ]
+    // Load coupons using the coupon store
+    await couponStore.fetchMyCoupons()
   } catch (error) {
     console.error('Error loading coupons:', error)
   } finally {

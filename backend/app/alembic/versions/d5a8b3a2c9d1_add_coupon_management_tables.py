@@ -7,6 +7,7 @@ Create Date: 2025-11-13 10:00:00.000000
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import UUID
 
 
 # revision identifiers, used by Alembic.
@@ -33,7 +34,7 @@ def upgrade():
     sa.Column('code', sa.String(), nullable=False),
     sa.Column('expiration_date', sa.Date(), nullable=True),
     sa.Column('is_assigned', sa.Boolean(), nullable=False),
-    sa.Column('assigned_to_user_id', sa.Integer(), nullable=True),
+    sa.Column('assigned_to_user_id', UUID(as_uuid=True), nullable=True),
     sa.ForeignKeyConstraint(['assigned_to_user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('code')
@@ -45,9 +46,9 @@ def upgrade():
     
     op.create_table('user_coupons',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', UUID(as_uuid=True), nullable=False),
     sa.Column('coupon_id', sa.Integer(), nullable=False),
-    sa.Column('assigned_by', sa.Integer(), nullable=False),
+    sa.Column('assigned_by', UUID(as_uuid=True), nullable=False),
     sa.Column('assigned_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['assigned_by'], ['user.id'], ),
     sa.ForeignKeyConstraint(['coupon_id'], ['coupons.id'], ),

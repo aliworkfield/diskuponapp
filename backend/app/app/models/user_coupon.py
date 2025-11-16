@@ -12,11 +12,12 @@ if TYPE_CHECKING:
 
 
 class UserCoupon(Base):
+    __tablename__ = "user_coupons"
     
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     coupon_id: Mapped[int] = mapped_column(ForeignKey("coupons.id"))
-    assigned_by: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    assigned_by: Mapped[int] = mapped_column(ForeignKey("user.id"))
     assigned_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     
     # Relationships

@@ -107,10 +107,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useAuthStore, useTokenStore } from '@/stores'
+import { useAuthStore, useTokenStore, useCouponStore, useToastStore } from '@/stores'
+import type { ICouponAssign } from '@/interfaces'
 
 const authStore = useAuthStore()
 const tokenStore = useTokenStore()
+const couponStore = useCouponStore()
+const toastStore = useToastStore()
 
 const assigning = ref(false)
 const assignmentData = ref({
@@ -124,9 +127,17 @@ const assignmentData = ref({
 const assignCoupons = async () => {
   assigning.value = true
   try {
-    // Here you would make an API call to assign the coupons
-    // For now, we'll just show a success message
-    alert('Coupons assigned successfully!')
+    // Convert assignment data to the required format
+    const assignData: ICouponAssign = {
+      brand: assignmentData.value.brand,
+      tag: assignmentData.value.tag,
+      target_type: assignmentData.value.target_type,
+      target_value: assignmentData.value.target_value || null,
+      exclude_users: assignmentData.value.exclude_users || null
+    }
+    
+    // Assign coupons using the coupon store
+    await couponStore.assignCoupons(assignData)
     
     // Reset form
     assignmentData.value = {
@@ -136,9 +147,18 @@ const assignCoupons = async () => {
       target_value: '',
       exclude_users: ''
     }
+    
+    toastStore.addNotice({
+      title: "Success",
+      content: "Coupons assigned successfully!",
+    })
   } catch (error) {
     console.error('Error assigning coupons:', error)
-    alert('Error assigning coupons')
+    toastStore.addNotice({
+      title: "Error",
+      content: "Error assigning coupons",
+      icon: "error"
+    })
   } finally {
     assigning.value = false
   }

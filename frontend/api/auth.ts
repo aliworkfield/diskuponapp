@@ -16,6 +16,20 @@ export const apiAuth = {
   async getTestText() {
     return await useFetch<IMsg>(`${apiCore.url()}/users/tester`)
   },
+  // LOGIN WITH WINDOWS AUTHENTICATION
+  async loginWithWindowsAuth() {
+    // For Windows authentication, we simulate it by sending the X-Windows-Username header
+    // In a real environment, this would be handled by IIS or another web server
+    const headers = {
+      "X-Windows-Username": "devuser@example.com" // Default development user
+    }
+    return await useFetch<ITokenResponse>(`${apiCore.url()}/login/windows`,
+      {
+        method: "POST",
+        headers: headers
+      }
+    )
+  },
   // LOGIN WITH MAGIC LINK OR OAUTH2 (USERNAME/PASSWORD)
   async loginWithMagicLink(email: string) {
     return await useFetch<IWebToken>(`${apiCore.url()}/login/magic/${email}`,

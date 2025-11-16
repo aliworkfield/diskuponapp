@@ -140,9 +140,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useAuthStore, useTokenStore } from '@/stores'
-import { apiCore } from '@/api/core'
-import { ITokenResponse } from '@/interfaces'
+import { useAuthStore, useTokenStore, useCouponStore, useToastStore } from '@/stores'
+import type { ICouponCreate, ICouponUpload } from '@/interfaces'
 
 interface Coupon {
   brand: string
@@ -153,6 +152,8 @@ interface Coupon {
 
 const authStore = useAuthStore()
 const tokenStore = useTokenStore()
+const couponStore = useCouponStore()
+const toastStore = useToastStore()
 
 const uploading = ref(false)
 const file = ref<File | null>(null)
@@ -210,13 +211,33 @@ const uploadCoupons = async () => {
   
   uploading.value = true
   try {
-    // Here you would make an API call to upload the coupons
-    // For now, we'll just show a success message
-    alert(`${couponsToAdd.value.length} coupons uploaded successfully!`)
+    // Convert coupons to the required format
+    const couponData: ICouponUpload = {
+      coupons: couponsToAdd.value.map(coupon => ({
+        brand: coupon.brand,
+        tag: coupon.tag,
+        code: coupon.code,
+        expiration_date: coupon.expiration_date || null
+      }))
+    }
+    
+    // Upload coupons using the coupon store
+    await couponStore.uploadCoupons(couponData)
+    
+    // Clear the list after successful upload
     couponsToAdd.value = []
+    
+    toastStore.addNotice({
+      title: "Success",
+      content: `${couponData.coupons.length} coupons uploaded successfully!`,
+    })
   } catch (error) {
     console.error('Error uploading coupons:', error)
-    alert('Error uploading coupons')
+    toastStore.addNotice({
+      title: "Error",
+      content: "Error uploading coupons",
+      icon: "error"
+    })
   } finally {
     uploading.value = false
   }
