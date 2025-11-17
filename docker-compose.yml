@@ -219,6 +219,8 @@ services:
         BACKEND_PROCESS_MANAGER: ${BACKEND_PROCESS_MANAGER-gunicorn}
         BACKEND_WITH_RELOAD: ${BACKEND_WITH_RELOAD-false}
         INSTALL_DEV: ${INSTALL_DEV-false}
+    ports:
+      - "8000:80"
     deploy:
       labels:
         - traefik.enable=true
@@ -252,27 +254,22 @@ services:
     image: "${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}"
     env_file:
       - .env
-      - ./frontend/.env
     environment:
-      - NUXT_HOST=0.0.0.0
-      - NUXT_PORT=3000
-      - NITRO_HOST=0.0.0.0
-      - NITRO_PORT=3000
+      - VITE_API_BASE_URL=http://backend:80
     build:
-      context: ./frontend
+      context: ./react-frontend
       dockerfile: Dockerfile
-      target: build
     ports:
-      - "3000:3000"
+      - "3001:3001"
     volumes:
-      - ./frontend:/frontend
-      - /frontend/node_modules
+      - ./react-frontend:/app
+      - /app/node_modules
     deploy:
       labels:
         - traefik.enable=true
         - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
         - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.rule=PathPrefix(`/`)
-        - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=3000
+        - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=3001
 
 volumes:
   app-db-data:

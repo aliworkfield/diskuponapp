@@ -68,31 +68,31 @@ apiClient.interceptors.response.use(
 export const apiCoupons = {
   // Upload coupons
   async uploadCoupons(data: ICouponUpload[]): Promise<IMsg> {
-    const response = await apiClient.post<IMsg>('/coupons/upload', data);
+    const response = await apiClient.post<IMsg>('/api/coupons/upload', data);
     return response.data;
   },
 
   // Assign coupons to user
   async assignCoupons(data: ICouponAssign): Promise<IMsg> {
-    const response = await apiClient.post<IMsg>('/coupons/assign', data);
+    const response = await apiClient.post<IMsg>('/api/coupons/assign', data);
     return response.data;
   },
 
   // Get all coupons
   async getAllCoupons(): Promise<ICoupon[]> {
-    const response = await apiClient.get<ICoupon[]>('/coupons/');
+    const response = await apiClient.get<ICoupon[]>('/api/coupons/');
     return response.data;
   },
 
   // Get user's coupons
   async getMyCoupons(): Promise<ICoupon[]> {
-    const response = await apiClient.get<ICoupon[]>('/coupons/my');
+    const response = await apiClient.get<ICoupon[]>('/api/coupons/my');
     return response.data;
   },
 
   // Windows authentication
   async windowsAuth(username: string): Promise<{ token: string; user: any }> {
-    const response = await apiClient.post<{ token: string; user: any }>('/auth/windows', { username });
+    const response = await apiClient.post<{ token: string; user: any }>('/api/auth/windows', { username });
     return response.data;
   }
 };
